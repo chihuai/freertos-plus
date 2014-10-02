@@ -26,11 +26,13 @@ void usage(const char * binname) {
 
 void processdir(DIR * dirp, const char * curpath, FILE * outfile, const char * prefix) {
     char fullpath[1024];
+    char filename[1024];
     char buf[16 * 1024];
     struct dirent * ent;
     DIR * rec_dirp;
     uint32_t cur_hash = hash_djb2((const uint8_t *) curpath, hash_init);
     uint32_t size, w, hash;
+    uint32_t filename_len;
     uint8_t b;
     FILE * infile;
 
@@ -39,6 +41,7 @@ void processdir(DIR * dirp, const char * curpath, FILE * outfile, const char * p
         strcat(fullpath, "/");
         strcat(fullpath, curpath);
         strcat(fullpath, ent->d_name);
+        strcpy(filename, ent->d_name);
     #ifdef _WIN32
         if (GetFileAttributes(fullpath) & FILE_ATTRIBUTE_DIRECTORY) {
     #else
@@ -54,11 +57,12 @@ void processdir(DIR * dirp, const char * curpath, FILE * outfile, const char * p
             closedir(rec_dirp);
         } else {
             hash = hash_djb2((const uint8_t *) ent->d_name, cur_hash);
+            
             infile = fopen(fullpath, "rb");
             if (!infile) {
                 perror("opening input file");
                 exit(-1);
-            }
+           			 }
             b = (hash >>  0) & 0xff; fwrite(&b, 1, 1, outfile);
             b = (hash >>  8) & 0xff; fwrite(&b, 1, 1, outfile);
             b = (hash >> 16) & 0xff; fwrite(&b, 1, 1, outfile);
@@ -70,16 +74,27 @@ void processdir(DIR * dirp, const char * curpath, FILE * outfile, const char * p
             b = (size >>  8) & 0xff; fwrite(&b, 1, 1, outfile);
             b = (size >> 16) & 0xff; fwrite(&b, 1, 1, outfile);
             b = (size >> 24) & 0xff; fwrite(&b, 1, 1, outfile);
+            
+            
+            filename_len = strlen(filename);
+            b = (filename_len >> 0) & 0xff; fwrite(&b, 1, 1, outfile);
+            b = (filename_len >> 8) & 0xff; fwrite(&b, 1, 1, outfile);
+            b = (filename_len >> 16) & 0xff; fwrite(&b, 1, 1, outfile);
+            b = (filename_len >> 24) & 0xff; fwrite(&b, 1, 1, outfile);
+            
+            fwrite(filename, 1, filename_len, outfile);
+            
             while (size) {
                 w = size > 16 * 1024 ? 16 * 1024 : size;
                 fread(buf, 1, w, infile);
                 fwrite(buf, 1, w, outfile);
                 size -= w;
-            }
+            			}
+            			
             fclose(infile);
-        }
-    }
-}
+        		}
+    		}
+	}
 
 int main(int argc, char ** argv) {
     char * binname = *argv++;
@@ -100,12 +115,12 @@ int main(int argc, char ** argv) {
             default:
                 usage(binname);
                 break;
-            }
+            			}
         } else {
             if (outname)
                 usage(binname);
             outname = o;
-        }
+        	      }
     }
 
     if (!outname)
@@ -122,7 +137,7 @@ int main(int argc, char ** argv) {
     if (!dirp) {
         perror("opening directory");
         exit(-1);
-    }
+   	   }
 
     processdir(dirp, "", outfile, dirname);
     fwrite(&z, 1, 8, outfile);
