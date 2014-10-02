@@ -157,7 +157,7 @@ int main()
 	fio_init();
 	
 	register_romfs("romfs", &_sromfs);
-	
+	//register_romfs("romfs2", &_sromfs);
 	/* Create the queue used by the serial task.  Messages for write to
 	 * the RS232. */
 	vSemaphoreCreateBinary(serial_tx_wait_sem);
