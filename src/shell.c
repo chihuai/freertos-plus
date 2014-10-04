@@ -63,10 +63,10 @@ void ls_command(int n, char *argv[]){
 	char buf[1024];
 	
 	if (n == 1) {
-		list_fs(buf);
+		list_fs(buf, NULL);
 	} else if (n == 2) {
 		const char * path = argv[1];
-		list_fs_path(buf, path);
+		list_fs(buf, path);
 	} else {
 		fio_printf(1, "\r\nparameter error\r\n");
 		return;
@@ -157,12 +157,12 @@ void test_command(int n, char *argv[]) {
     int error;
 
     fio_printf(1, "\r\n");
-
+	 host_action(SYS_SYSTEM, "mkdir output");
     handle = host_action(SYS_OPEN, "output/syslog", 8);
     if(handle == -1) {
         fio_printf(1, "Open file error!\n\r");
         return;
-    }
+  	   }
 
     char *buffer = "Test host_write function which can write data to output/syslog\n";
     error = host_action(SYS_WRITE, handle, (void *)buffer, strlen(buffer));
@@ -170,7 +170,7 @@ void test_command(int n, char *argv[]) {
         fio_printf(1, "Write file error! Remain %d bytes didn't write in the file.\n\r", error);
         host_action(SYS_CLOSE, handle);
         return;
-    }
+    	   }
 
     host_action(SYS_CLOSE, handle);
 }

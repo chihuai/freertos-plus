@@ -23,24 +23,20 @@ __attribute__((constructor)) void fs_init() {
     memset(fss, 0, sizeof(fss));
 }
 
-void list_fs(char * buf) {
+void list_fs(char * buf, const char * path) {
 	int i;
 	
 	*buf = (char)0x00;
-
-	for (i = 0; i < MAX_FS; i++) {
+	
+	if (path == NULL) {
+		for (i = 0; i < MAX_FS; i++) {
 		if (!fss[i].cb) {
 			return;
 		}
 		strcat((char *)buf, (const char *)"\r\n");
 		strcat((char *)buf, fss[i].fs_name);
+		}
 	}
-}
-
-void list_fs_path(char * buf, const char * path) {
-	int i;
-	
-	*buf = (char)0x00;
 	
 	if (strcmp((char *)path, (const char *)"/") == 0) {
 		for (i = 0; i < MAX_FS; i++) {
