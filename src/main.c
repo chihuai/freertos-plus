@@ -118,9 +118,10 @@ void system_logger(void *pvParameters)
 
     handle = host_action(SYS_OPEN, "output/syslog", 4);
     if(handle == -1) {
-        fio_printf(1, "Open file error!\n");
-        return;
-    }
+    	  host_action(SYS_SYSTEM, "mkdir output");
+        //fio_printf(1, "Open file error!\n");
+        //return;
+   	   }
 
     while(1) {
         memcpy(output, tag, strlen(tag));
@@ -157,7 +158,7 @@ int main()
 	fio_init();
 	
 	register_romfs("romfs", &_sromfs);
-	//register_romfs("romfs2", &_sromfs);
+
 	/* Create the queue used by the serial task.  Messages for write to
 	 * the RS232. */
 	vSemaphoreCreateBinary(serial_tx_wait_sem);
@@ -170,12 +171,12 @@ int main()
 	            (signed portCHAR *) "CLI",
 	            512 /* stack size */, NULL, tskIDLE_PRIORITY + 2, NULL);
 
-#if 0
+
 	/* Create a task to record system log. */
 	xTaskCreate(system_logger,
 	            (signed portCHAR *) "Logger",
 	            1024 /* stack size */, NULL, tskIDLE_PRIORITY + 1, NULL);
-#endif
+
 
 	/* Start running the tasks. */
 	vTaskStartScheduler();
