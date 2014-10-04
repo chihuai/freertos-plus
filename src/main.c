@@ -119,8 +119,6 @@ void system_logger(void *pvParameters)
     handle = host_action(SYS_OPEN, "output/syslog", 4);
     if(handle == -1) {
     	  host_action(SYS_SYSTEM, "mkdir output");
-        //fio_printf(1, "Open file error!\n");
-        //return;
    	   }
 
     while(1) {
