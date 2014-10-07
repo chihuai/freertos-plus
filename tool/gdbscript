@@ -1,6 +1,9 @@
 file build/main.elf
+
 target remote :3333
 
 b main
-
 c
+
+call test_command(1, 0xff00ff00)
+

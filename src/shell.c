@@ -158,7 +158,7 @@ void test_command(int n, char *argv[]) {
 
     fio_printf(1, "\r\n");
 	 host_action(SYS_SYSTEM, "mkdir output");
-    handle = host_action(SYS_OPEN, "output/syslog", 8);
+    handle = host_action(SYS_OPEN, "output/systest", 8);
     if(handle == -1) {
         fio_printf(1, "Open file error!\n\r");
         return;
