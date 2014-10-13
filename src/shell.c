@@ -89,7 +89,7 @@ int filedump(const char *filename){
 	while((count=fio_read(fd, buf, sizeof(buf)))>0){
 		fio_write(1, buf, count);
 	}
-
+	fio_printf(1, "\r\n");
 	fio_close(fd);
 	return 1;
 }
