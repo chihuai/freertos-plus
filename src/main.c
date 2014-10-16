@@ -89,11 +89,11 @@ void command_prompt(void *pvParameters)
 {
 	char buf[128];
 	char *argv[20];
-        char hint[] = USER_NAME "@" USER_NAME "-STM32:~$ ";
+   char hint[] = USER_NAME "@" USER_NAME "-STM32:~$ ";
 
 	fio_printf(1, "\rWelcome to FreeRTOS Shell\r\n");
 	while(1){
-                fio_printf(1, "%s", hint);
+      fio_printf(1, "%s", hint);
 		fio_read(0, buf, 127);
 	
 		int n=parse_command(buf, argv);
@@ -115,10 +115,12 @@ void system_logger(void *pvParameters)
     char *tag = "\nName          State   Priority  Stack  Num\n*******************************************\n";
     int handle, error;
     const portTickType xDelay = 100000 / 100;
-
+    
+	 host_action(SYS_SYSTEM, "mkdir -p output");
     handle = host_action(SYS_OPEN, "output/syslog", 4);
     if(handle == -1) {
-    	  host_action(SYS_SYSTEM, "mkdir output");
+    	fio_printf(1, "fail to open the file\n\r");
+    	return;
    	   }
 
     while(1) {
